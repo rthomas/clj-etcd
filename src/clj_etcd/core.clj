@@ -15,9 +15,12 @@
           prev-val (merge {:prev-val prev-val})))
 
 (defn- parse-response [resp]
+  "FIX - Implement"
   (println resp))
 
 (defn set! [k v & {:keys [ttl prev-val]}]
+  "Returns a function to set the value of the specified key to the
+  value specified. Allows :ttl (in seconds) and :prev-val options."
   (fn [instance]
     (let [resp (client/put (key-url instance k)
                 {:form-params (param-map :value v
