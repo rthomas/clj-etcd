@@ -29,5 +29,7 @@
       (parse-response resp))))
 
 (defn ls [k]
+  "Returns a function to perform a listing of the given key if it is a
+  directory."
   (fn [instance]
     nil))
