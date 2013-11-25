@@ -6,7 +6,12 @@ A client library for the https://github.com/coreos/etcd project.
 
 Usage of the library is simple and it returns a map of data the same as the json returned by etcd.
 
-####From the REPL
+#### In your project
+
+Leiningen
+`[clj-etcd "0.1.1"]`
+
+#### From the REPL
 
 Require the library
 
