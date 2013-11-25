@@ -7,4 +7,5 @@
                  [cheshire "5.2.0"]
                  [clj-http "0.7.7"]]
   :plugins [[lein-kibit "0.0.8"]]
-  :scm {:url "git@github.com:rthomas/clj-etcd.git"})
+  :scm {:url "git@github.com:rthomas/clj-etcd.git"}
+  :aot :all)
