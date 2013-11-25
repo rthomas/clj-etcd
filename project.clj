@@ -7,6 +7,7 @@
                  [cheshire "5.2.0"]
                  [clj-http "0.7.7"]
                  [org.clojure/tools.logging "0.2.6"]]
-  :plugins [[lein-kibit "0.0.8"]]
+  :plugins [[lein-kibit "0.0.8"]
+            [lein-release "1.0.5"]]
   :scm {:url "git@github.com:rthomas/clj-etcd.git"}
   :aot :all)
