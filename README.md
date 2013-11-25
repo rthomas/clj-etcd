@@ -10,7 +10,7 @@ Usage of the library is simple and it returns a map of data the same as the json
 
 Leiningen
 
-`[clj-etcd "0.1.1"]`
+`[clj-etcd "0.1.2"]`
 
 #### From the REPL
 
