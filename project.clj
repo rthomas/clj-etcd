@@ -9,5 +9,6 @@
                  [org.clojure/tools.logging "0.2.6"]]
   :plugins [[lein-kibit "0.0.8"]
             [lein-release "1.0.5"]]
+  :lein-release {:deploy-via :clojars}
   :scm {:url "git@github.com:rthomas/clj-etcd.git"}
   :aot :all)
