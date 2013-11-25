@@ -1,4 +1,4 @@
-(defproject clj-etcd "0.1.0"
+(defproject clj-etcd "0.1.1-SNAPSHOT"
   :description "etcd client library for Clojure"
   :url "http://github.com/rthomas/clj-etcd"
   :license {:name "Eclipse Public License"
