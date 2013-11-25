@@ -29,3 +29,16 @@
                   instance)))) 
     ))
 
+(deftest test-connect
+  (testing "Assert trailing /'s are removed from the url"
+    (is (= (:url (connect test-url)) test-url))
+    (is (= (:url (connect (str test-url "/"))) test-url))
+    (is (= (:url (connect (str test-url "////////"))) test-url))))
+
+(deftest test-key->url
+  (let [i (connect test-url)]
+    (testing "Assert leading /'s are removed from the key"
+      (is (= (key->url i "my-key") (str test-url "/v2/keys/my-key")))
+      (is (= (key->url i "/my-key") (str test-url "/v2/keys/my-key")))
+      (is (= (key->url i "///my-key") (str test-url "/v2/keys/my-key")))
+      (is (= (key->url i "/my/key/") (str test-url "/v2/keys/my/key/"))))))

@@ -9,6 +9,7 @@ Usage of the library is simple and it returns a map of data the same as the json
 #### In your project
 
 Leiningen
+
 `[clj-etcd "0.1.1"]`
 
 #### From the REPL

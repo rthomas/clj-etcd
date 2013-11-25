@@ -6,10 +6,14 @@
 (defn connect [url]
   "Specifies the instance to connect to - this needs to be
    passed to the functions returned by the other functions."
-  {:url url})
+  (if (and url (.endsWith url "/"))
+    (recur (.substring url 0 (- (count url) 1)))
+    {:url url}))
 
-(defn- key-url [instance k]
-  (str (:url instance) "/v2/keys/" k))
+(defn key->url [instance k]
+    (if (and k (.startsWith k "/")) 
+      (recur instance (clojure.string/replace-first k #"/" ""))
+      (str (:url instance) "/v2/keys/" k)))
 
 (defn- query-params [url & {:keys [prev-val prev-index prev-exist wait recursive]}]
   (let [params (cond-> []
@@ -40,7 +44,7 @@
                            recursive]}]
   (fn [instance]
     (let [url (-> instance
-                  (key-url key)
+                  (key->url key)
                   (query-params :prev-val prev-val
                                 :prev-index prev-index
                                 :prev-exist prev-exist
