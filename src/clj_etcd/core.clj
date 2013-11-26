@@ -10,10 +10,15 @@
     (recur (.substring url 0 (- (count url) 1)))
     {:url url}))
 
-(defn key->url [instance k]
+(defn remove-trailing-slash [url]
+  (if (and url (.endsWith url "/"))
+    (recur (.substring url 0 (- (count url) 1)))
+    url))
+
+(defn key->url [base-url k]
     (if (and k (.startsWith k "/")) 
-      (recur instance (clojure.string/replace-first k #"/" ""))
-      (str (:url instance) "/v2/keys/" k)))
+      (recur base-url (clojure.string/replace-first k #"/" ""))
+      (str base-url "/v2/keys/" k)))
 
 (defn- query-params [url & {:keys [prev-val prev-index prev-exist wait recursive]}]
   (let [params (cond-> []
@@ -34,43 +39,44 @@
 (defn- parse-response [resp]
   (json/parse-string (:body resp) true))
 
-(defn -invoke [f & {:keys [key
-                           value
-                           ttl
-                           prev-val
-                           prev-index
-                           prev-exist
-                           wait
-                           recursive]}]
-  (fn [instance]
-    (let [url (-> instance
-                  (key->url key)
-                  (query-params :prev-val prev-val
-                                :prev-index prev-index
-                                :prev-exist prev-exist
-                                :wait wait
-                                :recursive recursive))]
-      (log/debug "invoke url:" url)
-      (try
-        (-> url
-            (f {:form-params (param-map :value value :ttl ttl)})
-            (parse-response))
-        (catch Exception e
-          (log/info "Exception:" (.getMessage e))
-          nil)))))
+(defn -invoke [base-url f & {:keys [key
+                                    value
+                                    ttl
+                                    prev-val
+                                    prev-index
+                                    prev-exist
+                                    wait
+                                    recursive]}]
+  (let [url (-> base-url
+                (remove-trailing-slash)
+                (key->url key)
+                (query-params :prev-val prev-val
+                              :prev-index prev-index
+                              :prev-exist prev-exist
+                              :wait wait
+                              :recursive recursive))]
+    (log/debug "invoke url:" url)
+    (try
+      (-> url
+          (f {:form-params (param-map :value value :ttl ttl)})
+          (parse-response))
+      (catch Exception e
+        (log/info "Exception:" (.getMessage e))
+        nil))))
 
-(defn set! [k v & {:keys [ttl
+(defn set! [base-url k v & {:keys [ttl
                           prev-val
                           prev-index
                           prev-exist]}]
-  "Returns a function that will set the value of a key, the
+  "Will set the value of a key, the
    following options are allowed: :ttl, :prev-val :prev-index
    and :prev-exist."
   (log/debug "set!" k "=" v ", ttl =" ttl
              ", prev-val =" prev-val
              ", prev-index =" prev-index
              ", prev-exist =" prev-exist)
-  (-invoke client/put
+  (-invoke base-url
+           client/put
            :key k
            :value v
            :ttl ttl
@@ -78,24 +84,32 @@
            :prev-index prev-index
            :prev-exist prev-exist))
 
-(defn ls [k]
+(defn exists? [base-url k]
+  "Returns true if the key exists."
+  nil)
+
+(defn dir? [base-url k]
+  "Returns true if the key exists and is a directory."
+  nil)
+
+(defn ls [base-url k]
   "Returns a function to perform a listing of the given key if it is a
   directory."
   (log/debug "ls:" k)
-  (-invoke client/get :key k))
+  (-invoke base-url client/get :key k))
 
-(defn delete! [k]
+(defn delete! [base-url k]
   "Returns a function that will perform a delete of the specified key."
   (log/debug "delete!" k)
-  (-invoke client/delete :key k))
+  (-invoke base-url client/delete :key k))
 
-(defn wait [k & {:keys [recursive]}]
+(defn wait [base-url k & {:keys [recursive]}]
   "Returns a function that takes an instance and returns a future, blocking
    until a change is made on the requested key. Valid options are
    :recursive true."
   (log/debug "wait" k "recursive:" recursive)
-  (fn [instance]
-    (future ((-invoke client/get
-                     :key k
-                     :wait true
-                     :recursive recursive) instance))))
+  (future (-invoke base-url
+                   client/get
+                   :key k
+                   :wait true
+                   :recursive recursive)))
