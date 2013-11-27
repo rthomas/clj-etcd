@@ -5,7 +5,7 @@
 
 (defn remove-trailing-slash [url]
   (if (and url (.endsWith url "/"))
-    (recur (.substring url 0 (- (count url) 1)))
+    (recur (.substring url 0 (dec (count url))))
     url))
 
 (defn key->url [base-url k]
