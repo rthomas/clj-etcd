@@ -97,6 +97,16 @@ We can also wait on a change for a key, this also support the :recursive optiona
     user=> (etcd/wait base-url "some/key")
     #<core$future_call$reify__6267@43e3cae: :pending>
 
+## Building from source
+
+### Building
+
+This is a simple leiningen project, a `lein compile` should do or a `lein install` to get it into your local repo.
+
+### Testing
+
+A `lein test` will run the unit tests.
+
 ## License
 
 Copyright © 2013 Ryan Thomas
